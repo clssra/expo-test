@@ -1,13 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+// import * as users from './assets/users.json';
+
 
 export default function App() {
-  return (
+  const [usersData, setUsersData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+
+  const getData=()=>{
+    
+    fetch('https://jsonplaceholder.typicode.com/users', {
+      method: 'GET'})
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      setUsersData(data)})
+    .catch(err => console.log(err))
+    .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  return(
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {isLoading ? <Text>Loading...</Text> : usersData.map(_user => <Text key={_user.id}>{_user.name}</Text>)}
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
